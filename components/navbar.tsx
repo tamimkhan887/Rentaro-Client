@@ -22,7 +22,7 @@ interface NavbarProps {
 const defaultNavLinks: NavLinkItem[] = [
   { label: "Home", href: "/", isActive: true },
   { label: "All Equipment", href: "/equipment" },
-  { label: "Contact Us", href: "/contact" },
+  { label: "About Us", href: "/about" },
 ]
 
 export function Navbar({
@@ -34,7 +34,7 @@ export function Navbar({
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 w-full border-b border-neutral-200/70 bg-white/95 backdrop-blur-md transition-colors dark:border-neutral-800/80 dark:bg-neutral-950/95",
+        "sticky top-0 z-50 w-full border-b border-neutral-200/70 bg-white/95 backdrop-blur-md transition-colors dark:border-neutral-800/80 dark:bg-neutral-950/95 py-3",
         className
       )}
     >
