@@ -32,15 +32,19 @@ import {
     ShieldCheck,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { authClient } from "@/lib/auth-client"
+import { toast } from "@/components/ui/toast"
+import { useRouter } from "next/navigation"
 
-type UserRole = "Customer" | "Owner" | "Admin"
+type UserRole = "customer" | "owner" | "admin"
 
 export default function RegisterPage() {
+    const router = useRouter()
     const [formData, setFormData] = React.useState({
         name: "",
         email: "",
         photoUrl: "",
-        role: "Customer" as UserRole,
+        role: "customer" as UserRole,
         password: "",
         confirmPassword: "",
     })
@@ -88,7 +92,7 @@ export default function RegisterPage() {
     // - Minimum length of 6 characters
     // - At least one uppercase letter (A-Z)
     // - At least one lowercase letter (a-z)
-    const hasMinLength = formData.password.length >= 6
+    const hasMinLength = formData.password.length >= 8
     const hasUppercase = /[A-Z]/.test(formData.password)
     const hasLowercase = /[a-z]/.test(formData.password)
     const isPasswordValid = hasMinLength && hasUppercase && hasLowercase
@@ -120,10 +124,39 @@ export default function RegisterPage() {
         setFormData((prev) => ({ ...prev, role }))
     }
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         if (!isFormValid) return
-        console.log('form data', formData)
+        const { data, error } = await authClient.signUp.email({
+            name: formData.name,
+            email: formData.email,
+            password: formData.password,
+            image: formData.photoUrl,
+            role: formData.role,
+        })
+
+        if (data?.user) {
+            setFormData({
+                name: "",
+                email: "",
+                photoUrl: "",
+                role: "customer",
+                password: "",
+                confirmPassword: "",
+            })
+            toast.add({
+                title: "Registration Successfull",
+                description: "You can now login to your account",
+            })
+            router.push("/")
+        }
+        if (error) {
+
+            toast.add({
+                title: "Registration Failed",
+                description: error.message,
+            })
+        }
     }
 
     const roles: {
@@ -133,19 +166,19 @@ export default function RegisterPage() {
         icon: React.ElementType
     }[] = [
             {
-                value: "Customer",
+                value: "customer",
                 title: "Customer",
                 desc: "Rent equipment",
                 icon: UserCheck,
             },
             {
-                value: "Owner",
+                value: "owner",
                 title: "Owner",
                 desc: "List machinery",
                 icon: HardHat,
             },
             {
-                value: "Admin",
+                value: "admin",
                 title: "Admin",
                 desc: "Operations",
                 icon: ShieldCheck,
@@ -158,11 +191,11 @@ export default function RegisterPage() {
             <main className="relative flex-1 flex flex-col items-center justify-center px-4 py-10 sm:px-6 lg:px-8 overflow-hidden">
                 {/* Ambient Decorative Background */}
                 <div
-                    className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-[size:36px_36px] [mask-image:radial-gradient(ellipse_70%_70%_at_50%_50%,#000_60%,transparent_100%)]"
+                    className="pointer-events-none absolute inset-0 bg-[linear-gradient(to_right,#00000008_1px,transparent_1px),linear-gradient(to_bottom,#00000008_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,#ffffff06_1px,transparent_1px),linear-gradient(to_bottom,#ffffff06_1px,transparent_1px)] bg-size-[36px_36px]   mask-[radial-gradient(ellipse_70%_70%_at_50%_50%,#000_60%,transparent_100%)]"
                     aria-hidden="true"
                 />
                 <div
-                    className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-gradient-to-br from-[#e77952]/15 to-amber-200/20 blur-3xl dark:from-[#e77952]/10 dark:to-transparent"
+                    className="pointer-events-none absolute -top-24 -right-24 h-96 w-96 rounded-full bg-linear-to-br from-[#e77952]/15 to-amber-200/20 blur-3xl dark:from-[#e77952]/10 dark:to-transparent"
                     aria-hidden="true"
                 />
                 <div
@@ -393,7 +426,7 @@ export default function RegisterPage() {
                                             Password Requirements:
                                         </div>
                                         <ul className="space-y-1 text-xs">
-                                            {/* At least 6 characters */}
+                                            {/* At least 8 characters */}
                                             <li
                                                 className={`flex items-center gap-1.5 transition-colors ${hasMinLength
                                                     ? "text-emerald-600 dark:text-emerald-400 font-medium"
@@ -405,7 +438,7 @@ export default function RegisterPage() {
                                                 ) : (
                                                     <XCircle className="size-3.5 text-red-600  shrink-0" />
                                                 )}
-                                                <span>At least 6 characters in length</span>
+                                                <span>At least 8 characters in length</span>
                                             </li>
 
                                             {/* Must have an uppercase letter */}
@@ -510,7 +543,7 @@ export default function RegisterPage() {
                                 {/* Submit Button */}
                                 <Button
                                     type="submit"
-                                    variant="brand"
+                                    variant="default"
                                     size="lg"
                                     disabled={!isFormValid}
                                     className="w-full h-11 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all mt-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"

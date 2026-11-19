@@ -7,6 +7,7 @@ import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
+import { authClient } from "@/lib/auth-client"
 
 export interface NavLinkItem {
   label: string
@@ -25,12 +26,14 @@ const defaultNavLinks: NavLinkItem[] = [
   { label: "About Us", href: "/about" },
 ]
 
+
 export function Navbar({
   navLinks = defaultNavLinks,
   className,
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
-
+  const { data: session } = authClient.useSession()
+  const user = session?.user
   return (
     <header
       className={cn(
@@ -93,27 +96,33 @@ export function Navbar({
           {/* Dark / Light Mode Toggle */}
           <ThemeToggle />
 
-          {/* Log In Button (Shadcn Button variant="ghost") */}
-          <Link href="/login">
-            <Button
-              variant="ghost"
-              size="lg"
-              className="text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:text-white dark:hover:bg-neutral-800 font-medium text-sm px-4 h-9.5 rounded-lg"
-            >
-              Log In
-            </Button>
-          </Link>
+          {
+            user ? <div>
+              <h3>Dashboard</h3>
+            </div> : <div>
+              {/* Log In Button (Shadcn Button variant="ghost") */}
+              <Link href="/login">
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  className="text-neutral-700 hover:text-neutral-900 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:text-white dark:hover:bg-neutral-800 font-medium text-sm px-4 h-9.5 rounded-lg"
+                >
+                  Log In
+                </Button>
+              </Link>
 
-          {/* Register Button (Shadcn Button variant="brand") */}
-          <Link href="/register">
-            <Button
-              variant="brand"
-              size="lg"
-              className="rounded-lg px-5 h-9.5 text-sm font-medium shadow-sm hover:shadow active:scale-95 transition-all"
-            >
-              Register
-            </Button>
-          </Link>
+              {/* Register Button (Shadcn Button variant="brand") */}
+              <Link href="/register">
+                <Button
+                  variant="default"
+                  size="lg"
+                  className="rounded-lg px-5 h-9.5 text-sm font-medium shadow-sm hover:shadow active:scale-95 transition-all"
+                >
+                  Register
+                </Button>
+              </Link>
+            </div>
+          }
         </div>
 
         {/* Mobile Controls (Theme Toggle + Hamburger Menu) */}
@@ -163,7 +172,7 @@ export function Navbar({
               </Link>
               <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
                 <Button
-                  variant="brand"
+                  variant="default"
                   size="lg"
                   className="w-full justify-center h-10 shadow-sm"
                 >

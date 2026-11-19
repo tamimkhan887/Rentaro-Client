@@ -148,7 +148,7 @@ export default function NotFound() {
             {/* Button 1: Return to Home (Orange filled) */}
             <Link href="/" className="group focus:outline-hidden">
               <Button
-                variant="brand"
+                variant="default"
                 className="h-13 px-5 py-2 rounded-xl bg-[#e77952] hover:bg-[#d86b44] active:bg-[#c95f38] text-white shadow-sm hover:shadow-md transition-all gap-3 cursor-pointer"
               >
                 <div className="flex size-7 items-center justify-center rounded-lg bg-white/15 group-hover:bg-white/20 transition-colors">
