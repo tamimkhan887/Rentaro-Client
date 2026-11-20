@@ -124,38 +124,119 @@ export default function RegisterPage() {
         setFormData((prev) => ({ ...prev, role }))
     }
 
+    const [isSubmitting, setIsSubmitting] = React.useState(false)
+    const [isGoogleLoading, setIsGoogleLoading] = React.useState(false)
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
-        if (!isFormValid) return
-        const { data, error } = await authClient.signUp.email({
-            name: formData.name,
-            email: formData.email,
-            password: formData.password,
-            image: formData.photoUrl,
-            role: formData.role,
-        })
 
-        if (data?.user) {
-            setFormData({
-                name: "",
-                email: "",
-                photoUrl: "",
-                role: "customer",
-                password: "",
-                confirmPassword: "",
-            })
+        if (!formData.name.trim()) {
             toast.add({
-                title: "Registration Successfull",
-                description: "You can now login to your account",
+                title: "Name is required",
+                description: "Please enter your full name.",
+                type: "error",
             })
-            router.push("/")
+            return
         }
-        if (error) {
 
+        if (!formData.email.trim()) {
             toast.add({
-                title: "Registration Failed",
-                description: error.message,
+                title: "Email is required",
+                description: "Please enter a valid email address.",
+                type: "error",
             })
+            return
+        }
+
+        if (!isPasswordValid) {
+            toast.add({
+                title: "Weak Password",
+                description: "Password must be at least 8 characters with at least one uppercase and one lowercase letter.",
+                type: "error",
+            })
+            return
+        }
+
+        if (isPasswordMismatch) {
+            toast.add({
+                title: "Passwords do not match",
+                description: "Please make sure your confirmation password matches.",
+                type: "error",
+            })
+            return
+        }
+
+        if (isSubmitting) return
+
+        setIsSubmitting(true)
+        try {
+            const { data, error } = await authClient.signUp.email({
+                name: formData.name.trim(),
+                email: formData.email.trim(),
+                password: formData.password,
+                image: formData.photoUrl || undefined,
+                role: formData.role,
+            })
+
+            if (data?.user) {
+                setFormData({
+                    name: "",
+                    email: "",
+                    photoUrl: "",
+                    role: "customer",
+                    password: "",
+                    confirmPassword: "",
+                })
+                toast.add({
+                    title: "Registration Successful",
+                    description: "Your account has been created! Welcome to Rentora.",
+                    type: "success",
+                })
+                router.push("/")
+                router.refresh()
+            }
+            if (error) {
+                toast.add({
+                    title: "Registration Failed",
+                    description: error.message || "Failed to create account",
+                    type: "error",
+                })
+            }
+        } catch (err: unknown) {
+            toast.add({
+                title: "Registration Error",
+                description: err instanceof Error ? err.message : "Something went wrong during registration",
+                type: "error",
+            })
+        } finally {
+            setIsSubmitting(false)
+        }
+    }
+
+    const handleGoogleLogin = async () => {
+        setIsGoogleLoading(true)
+        try {
+            const res = await authClient.signIn.social({
+                provider: "google",
+                callbackURL: "/",
+            })
+            if (res?.error) {
+                toast.add({
+                    title: "Google Sign-Up Failed",
+                    description: res.error.message || "Failed to sign up with Google",
+                    type: "error",
+                })
+                setIsGoogleLoading(false)
+            } else if (res?.data?.url) {
+                window.location.href = res.data.url
+            }
+        } catch (err: unknown) {
+            toast.add({
+                title: "Google Sign-Up Failed",
+                description: err instanceof Error ? err.message : "Could not sign in with Google",
+                type: "error",
+            })
+            setIsGoogleLoading(false)
         }
     }
 
@@ -545,11 +626,53 @@ export default function RegisterPage() {
                                     type="submit"
                                     variant="default"
                                     size="lg"
-                                    disabled={!isFormValid}
+                                    disabled={!isFormValid || isSubmitting}
                                     className="w-full h-11 rounded-xl text-sm font-semibold shadow-md hover:shadow-lg transition-all mt-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
                                 >
-                                    <span>Register Account</span>
+                                    <span>{isSubmitting ? "Creating Account..." : "Register Account"}</span>
                                     <ArrowRight className="ml-2 size-4" />
+                                </Button>
+
+                                {/* Divider */}
+                                <div className="relative flex items-center py-2">
+                                    <div className="grow border-t border-neutral-200 dark:border-neutral-700" />
+                                    <span className="mx-4 text-xs text-neutral-400 whitespace-nowrap">
+                                        OR CONTINUE WITH
+                                    </span>
+                                    <div className="grow border-t border-neutral-200 dark:border-neutral-700" />
+                                </div>
+
+                                {/* Google Sign-Up */}
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={handleGoogleLogin}
+                                    disabled={isSubmitting || isGoogleLoading}
+                                    className="w-full h-11 rounded-xl text-sm font-semibold border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer disabled:opacity-60"
+                                >
+                                    <svg
+                                        className="mr-2 size-4"
+                                        viewBox="0 0 48 48"
+                                        aria-hidden="true"
+                                    >
+                                        <path
+                                            fill="#EA4335"
+                                            d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 3.04 13.22l7.98 6.19C12.9 13.72 18.02 9.5 24 9.5z"
+                                        />
+                                        <path
+                                            fill="#4285F4"
+                                            d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.74 7.18l7.65 5.94c4.47-4.13 7.13-10.21 7.13-17.59z"
+                                        />
+                                        <path
+                                            fill="#FBBC05"
+                                            d="M11.02 28.59A14.4 14.4 0 0 1 10.25 24c0-1.59.27-3.13.77-4.59l-7.98-6.19A23.93 23.93 0 0 0 0 24c0 3.87.93 7.53 3.04 10.78l7.98-6.19z"
+                                        />
+                                        <path
+                                            fill="#34A853"
+                                            d="M24 48c6.47 0 11.9-2.13 15.85-5.86l-7.65-5.94c-2.13 1.43-4.89 2.28-8.2 2.28-5.98 0-11.1-4.22-12.98-9.91l-7.98 6.19C6.51 43.62 14.62 48 24 48z"
+                                        />
+                                    </svg>
+                                    {isGoogleLoading ? "Connecting to Google..." : "Continue with Google"}
                                 </Button>
                             </form>
                         </CardContent>

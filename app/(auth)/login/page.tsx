@@ -31,6 +31,7 @@ export default function LoginPage() {
     const [password, setPassword] = React.useState("")
     const [showPassword, setShowPassword] = React.useState(false)
     const [isLoading, setIsLoading] = React.useState(false)
+    const [isGoogleLoading, setIsGoogleLoading] = React.useState(false)
     const router = useRouter()
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -74,18 +75,21 @@ export default function LoginPage() {
 
     // Handle Google login via Better Auth
     const handleGoogleLogin = async () => {
+        setIsGoogleLoading(true)
         try {
-            const data = await authClient.signIn.social({
+            const res = await authClient.signIn.social({
                 provider: "google",
+                callbackURL: "/",
             })
-            if (data) {
+            if (res?.error) {
                 toast.add({
-                    title: "Login Successful",
-                    description: "Welcome back to Rentora!",
-                    type: "success",
+                    title: "Google Login Failed",
+                    description: res.error.message || "Failed to sign in with Google",
+                    type: "error",
                 })
-                router.push("/")
-                router.refresh()
+                setIsGoogleLoading(false)
+            } else if (res?.data?.url) {
+                window.location.href = res.data.url
             }
         } catch (err: unknown) {
             toast.add({
@@ -93,6 +97,7 @@ export default function LoginPage() {
                 description: err instanceof Error ? err.message : "Could not sign in with Google",
                 type: "error",
             })
+            setIsGoogleLoading(false)
         }
     }
 
@@ -244,7 +249,8 @@ export default function LoginPage() {
                                     type="button"
                                     variant="outline"
                                     onClick={handleGoogleLogin}
-                                    className="w-full h-11 rounded-xl text-sm font-semibold border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer"
+                                    disabled={isLoading || isGoogleLoading}
+                                    className="w-full h-11 rounded-xl text-sm font-semibold border-neutral-200 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-800 cursor-pointer disabled:opacity-60"
                                 >
                                     <svg
                                         className="mr-2 size-4"
@@ -268,7 +274,7 @@ export default function LoginPage() {
                                             d="M24 48c6.47 0 11.9-2.13 15.85-5.86l-7.65-5.94c-2.13 1.43-4.89 2.28-8.2 2.28-5.98 0-11.1-4.22-12.98-9.91l-7.98 6.19C6.51 43.62 14.62 48 24 48z"
                                         />
                                     </svg>
-                                    Continue with Google
+                                    {isGoogleLoading ? "Connecting to Google..." : "Continue with Google"}
                                 </Button>
                             </form>
                         </CardContent>

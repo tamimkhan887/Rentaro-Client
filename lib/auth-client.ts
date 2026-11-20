@@ -3,9 +3,14 @@ import { inferAdditionalFields } from "better-auth/client/plugins"
 import type { auth } from "./auth"
 
 export const authClient = createAuthClient({
-    baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || process.env.BETTER_AUTH_URL,
+    baseURL:
+        process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
+        (typeof window !== "undefined"
+            ? window.location.origin
+            : process.env.BETTER_AUTH_URL || "http://localhost:3000"),
     plugins: [
         inferAdditionalFields<typeof auth>()
     ]
 })
-export const { signIn, signUp, useSession } = authClient
+
+export const { signIn, signUp, signOut, useSession } = authClient
