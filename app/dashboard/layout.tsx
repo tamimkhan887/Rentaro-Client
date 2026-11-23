@@ -330,7 +330,7 @@ export default function DashboardLayout({
                 <button
                   type="button"
                   onClick={() => setMobileSidebarOpen(false)}
-                  className="rounded-lg p-1 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800"
+                  className="rounded-lg p-1 text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 cursor-pointer"
                 >
                   <X className="size-5" />
                 </button>
@@ -341,6 +341,64 @@ export default function DashboardLayout({
             </div>
           </div>
         )}
+
+        {/* Right Main Content Area */}
+        <div className="flex-1 min-w-0 flex flex-col">
+          {/* Subheader / Breadcrumbs bar */}
+          <div className="sticky top-16 z-30 flex items-center justify-between border-b border-neutral-200/80 dark:border-neutral-800/80 bg-white/80 dark:bg-neutral-950/80 px-4 sm:px-6 lg:px-8 py-3.5 backdrop-blur-md">
+            <div className="flex items-center gap-3">
+              {/* Mobile Sidebar Toggle Button */}
+              <button
+                type="button"
+                onClick={() => setMobileSidebarOpen(true)}
+                className="lg:hidden inline-flex items-center justify-center size-9 rounded-lg border border-neutral-200 dark:border-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+                aria-label="Open dashboard menu"
+              >
+                <Menu className="size-5" />
+              </button>
+
+              {/* Breadcrumbs */}
+              <div className="flex items-center gap-1.5 text-xs text-neutral-500 dark:text-neutral-400">
+                <Link
+                  href="/"
+                  className="hover:text-[#e77952] transition-colors flex items-center gap-1"
+                >
+                  <Home className="size-3.5" />
+                  <span className="hidden sm:inline">Rentora</span>
+                </Link>
+                <ChevronRight className="size-3 text-neutral-400" />
+                <Link
+                  href={roleConfig.basePath}
+                  className="hover:text-[#e77952] transition-colors capitalize"
+                >
+                  {activeRole}
+                </Link>
+                <ChevronRight className="size-3 text-neutral-400" />
+                <span className="font-semibold text-neutral-900 dark:text-neutral-100">
+                  {pageTitle}
+                </span>
+              </div>
+            </div>
+
+            {/* Right Subheader info */}
+            <div className="flex items-center gap-2">
+              <span
+                className={cn(
+                  "hidden sm:inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-semibold border",
+                  roleConfig.badgeColor
+                )}
+              >
+                <RoleIcon className="size-3" />
+                <span>{roleConfig.roleName}</span>
+              </span>
+            </div>
+          </div>
+
+          {/* Page Content Body */}
+          <main className="flex-1 p-4 sm:p-6 lg:p-8">
+            {children}
+          </main>
+        </div>
       </div>
     </div>
   )
