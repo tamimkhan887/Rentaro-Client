@@ -4,13 +4,12 @@ import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
-import { Menu, X, LogOut } from "lucide-react"
+import { Menu, X, LogOut, LayoutDashboard } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { cn } from "@/lib/utils"
 import { authClient } from "@/lib/auth-client"
 import { toast } from "@/components/ui/toast"
-import { DashboardDropdown } from "@/components/dashboard-dropdown"
 
 export interface NavLinkItem {
   label: string
@@ -39,6 +38,15 @@ export function Navbar({
 
   const { data: session } = authClient.useSession()
   const user = session?.user
+
+  // Compute role-based dashboard destination
+  const role = (user?.role || "").toLowerCase()
+  const dashboardHref =
+    role === "admin"
+      ? "/dashboard/admin"
+      : role === "owner"
+        ? "/dashboard/owner"
+        : "/dashboard/customer"
 
   // Handle user sign out
   const handleSignOut = async () => {
@@ -130,8 +138,17 @@ export function Navbar({
 
           {user ? (
             <div className="flex items-center gap-2">
-              {/* Role-Based Dashboard Dropdown (shows only routes user can go to) */}
-              <DashboardDropdown user={user} />
+              {/* Role-Based Dashboard Direct Button */}
+              <Link href={dashboardHref}>
+                <Button
+                  variant="brand"
+                  size="lg"
+                  className="gap-2 rounded-lg px-4 h-9.5 text-sm font-medium shadow-xs hover:shadow transition-all cursor-pointer"
+                >
+                  <LayoutDashboard className="size-4" />
+                  <span>Dashboard</span>
+                </Button>
+              </Link>
 
               {/* Sign Out Button */}
               <Button
@@ -226,12 +243,17 @@ export function Navbar({
                     </div>
                   </div>
 
-                  {/* Role-Based Dashboard Accordion Dropdown for Mobile */}
-                  <DashboardDropdown
-                    user={user}
-                    isMobile={true}
-                    onNavigate={() => setMobileMenuOpen(false)}
-                  />
+                  {/* Role-Based Dashboard Direct Button for Mobile */}
+                  <Link href={dashboardHref} onClick={() => setMobileMenuOpen(false)}>
+                    <Button
+                      variant="brand"
+                      size="lg"
+                      className="w-full justify-center gap-2 h-10 shadow-sm"
+                    >
+                      <LayoutDashboard className="size-4" />
+                      <span>Open Dashboard</span>
+                    </Button>
+                  </Link>
 
                   {/* Sign Out Button for Mobile */}
                   <Button

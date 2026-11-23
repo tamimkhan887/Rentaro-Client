@@ -1,26 +1,51 @@
-import { PlusCircle } from "lucide-react"
+import { PlusCircle, Upload, ArrowRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 
 export default function OwnerAddEquipmentPage() {
   return (
-    <div className="container mx-auto max-w-6xl px-4 py-8 sm:px-6">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
-          <PlusCircle className="size-5" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
-            Add Equipment
-          </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            List a new machine, vehicle, or tool in the Rentora marketplace.
-          </p>
-        </div>
+    <div className="space-y-6 max-w-3xl">
+      <div>
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+          Add New Equipment
+        </h1>
+        <p className="mt-1 text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
+          List a new machine, excavator, or tool to earn daily rental revenue.
+        </p>
       </div>
 
-      <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/80 p-8 text-center backdrop-blur-sm">
-        <p className="text-neutral-500 dark:text-neutral-400 text-sm">
-          Equipment submission form will appear here.
-        </p>
+      <div className="rounded-2xl border border-neutral-200/90 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 sm:p-8 shadow-xs space-y-5">
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold">Equipment Name / Model</Label>
+          <Input placeholder="e.g. Caterpillar 320 Hydraulic Excavator" className="h-10 rounded-xl" />
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold">Category</Label>
+            <Input placeholder="Excavation / Earthmoving / Hauling" className="h-10 rounded-xl" />
+          </div>
+          <div className="space-y-1.5">
+            <Label className="text-xs font-semibold">Daily Rental Rate ($)</Label>
+            <Input placeholder="e.g. 350" type="number" className="h-10 rounded-xl" />
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold">Equipment Direct Photo URL</Label>
+          <Input placeholder="https://example.com/machine-image.jpg" className="h-10 rounded-xl" />
+        </div>
+
+        <div className="space-y-1.5">
+          <Label className="text-xs font-semibold">Location / Depot Address</Label>
+          <Input placeholder="e.g. Dhaka Industrial Zone, Yard #4" className="h-10 rounded-xl" />
+        </div>
+
+        <Button variant="brand" size="lg" className="w-full h-11 rounded-xl text-sm font-semibold mt-4 cursor-pointer">
+          <PlusCircle className="size-4 mr-2" />
+          <span>Publish Equipment Listing</span>
+        </Button>
       </div>
     </div>
   )

@@ -11,8 +11,35 @@ if (typeof dns.setServers === "function") {
         // Fallback to default DNS
     }
 }
+if (dns.promises && typeof dns.promises.setServers === "function") {
+    try {
+        dns.promises.setServers(["8.8.8.8", "1.1.1.1"]);
+    } catch {
+        // Fallback to default DNS
+    }
+}
 
-const client = new MongoClient(process.env.MONGODB_URL as string);
+/**
+ * Returns the MongoDB connection string.
+ * If the connection string is a MongoDB Atlas SRV URL that fails on Windows/ISP DNS,
+ * translates to the direct replica-set seed list to bypass querySrv DNS lookups completely.
+ */
+function getMongoUrl(): string {
+    const raw = process.env.MONGODB_URL || "";
+    if (raw.includes("c-1.pbzyvag.mongodb.net")) {
+        try {
+            const u = new URL(raw);
+            const user = u.username;
+            const pass = u.password;
+            return `mongodb://${user}:${pass}@ac-1svgrip-shard-00-00.pbzyvag.mongodb.net:27017,ac-1svgrip-shard-00-01.pbzyvag.mongodb.net:27017,ac-1svgrip-shard-00-02.pbzyvag.mongodb.net:27017/rentora?ssl=true&replicaSet=atlas-12x9s5-shard-0&authSource=admin&retryWrites=true&w=majority`;
+        } catch {
+            return raw;
+        }
+    }
+    return raw;
+}
+
+const client = new MongoClient(getMongoUrl());
 const db = client.db("rentora");
 
 export const auth = betterAuth({

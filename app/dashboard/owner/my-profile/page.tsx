@@ -1,26 +1,62 @@
-import { User } from "lucide-react"
+"use client"
+
+import { authClient } from "@/lib/auth-client"
+import { HardHat, Mail, User, Building } from "lucide-react"
 
 export default function OwnerMyProfilePage() {
+  const { data: session } = authClient.useSession()
+  const user = session?.user
+
   return (
-    <div className="container mx-auto max-w-6xl px-4 py-8 sm:px-6">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="flex size-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400">
-          <User className="size-5" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
-            Owner Profile
-          </h1>
-          <p className="text-sm text-neutral-500 dark:text-neutral-400">
-            Manage your fleet business details, payout info, and contact information.
-          </p>
-        </div>
+    <div className="space-y-6 max-w-3xl">
+      <div>
+        <h1 className="text-xl sm:text-2xl font-bold tracking-tight text-neutral-900 dark:text-neutral-100">
+          Fleet Owner Profile
+        </h1>
+        <p className="mt-1 text-xs sm:text-sm text-neutral-500 dark:text-neutral-400">
+          Manage your equipment company details, payout settings, and verification status.
+        </p>
       </div>
 
-      <div className="rounded-2xl border border-neutral-200 dark:border-neutral-800 bg-white/80 dark:bg-neutral-900/80 p-8 text-center backdrop-blur-sm">
-        <p className="text-neutral-500 dark:text-neutral-400 text-sm">
-          Fleet owner profile details and settings will appear here.
-        </p>
+      <div className="rounded-2xl border border-neutral-200/90 dark:border-neutral-800 bg-white dark:bg-neutral-900 p-6 shadow-xs space-y-6">
+        <div className="flex items-center gap-4">
+          <div className="flex size-16 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-600 font-bold text-2xl">
+            {user?.name ? user.name.charAt(0).toUpperCase() : "O"}
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-100">
+              {user?.name || "Fleet Owner"}
+            </h2>
+            <div className="flex items-center gap-2 mt-1">
+              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-900/40">
+                <HardHat className="size-3" />
+                <span>Verified Machinery Provider</span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-neutral-100 dark:border-neutral-800">
+          <div className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200/60 dark:border-neutral-700/60">
+            <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-1">
+              <Mail className="size-3.5" />
+              <span>Registered Email</span>
+            </div>
+            <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+              {user?.email || "owner@rentora.com"}
+            </p>
+          </div>
+
+          <div className="p-4 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-neutral-200/60 dark:border-neutral-700/60">
+            <div className="flex items-center gap-2 text-xs font-semibold text-neutral-500 dark:text-neutral-400 mb-1">
+              <Building className="size-3.5" />
+              <span>Payout Method</span>
+            </div>
+            <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+              Bank Direct Deposit (Active)
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )
