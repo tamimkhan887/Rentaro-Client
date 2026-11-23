@@ -238,7 +238,7 @@ export function FeaturedEquipment({ initialEquipments }: FeaturedEquipmentProps)
                     />
 
                     {/* Gradient overlay for readability */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/70 via-transparent to-neutral-950/20" />
+                    <div className="absolute inset-0 bg-linear-to-t from-neutral-950/70 via-transparent to-neutral-950/20" />
 
                     {/* Top Badges */}
                     <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
@@ -290,7 +290,7 @@ export function FeaturedEquipment({ initialEquipments }: FeaturedEquipmentProps)
                       {item.condition && (
                         <span className="inline-flex items-center gap-1 rounded-md bg-neutral-100 px-2 py-1 text-[11px] font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
                           <Wrench className="size-3 text-neutral-400" />
-                          <span className="truncate max-w-[130px]">{item.condition}</span>
+                          <span className="truncate max-w-32.5">{item.condition}</span>
                         </span>
                       )}
                       {item.quantity && (

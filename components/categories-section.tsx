@@ -163,7 +163,7 @@ export function CategoriesSection() {
                 className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl sm:rounded-3xl border border-neutral-200/80 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl dark:border-neutral-800 dark:bg-neutral-900/90 ${category.accentBorder} ${category.glowColor}`}
               >
                 {/* Background Image with Overlay */}
-                <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl sm:rounded-2xl bg-neutral-100 dark:bg-neutral-800 mb-5">
+                <div className="relative aspect-video w-full overflow-hidden rounded-xl sm:rounded-2xl bg-neutral-100 dark:bg-neutral-800 mb-5">
                   <Image
                     src={category.image}
                     alt={category.name}
@@ -174,7 +174,7 @@ export function CategoriesSection() {
                   />
 
                   {/* Gradient Overlays */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/85 via-neutral-950/30 to-transparent" />
+                  <div className="absolute inset-0 bg-linear-to-t from-neutral-950/85 via-neutral-950/30 to-transparent" />
 
                   {/* Top Floating Badge & Icon */}
                   <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
