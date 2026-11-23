@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import { motion } from "framer-motion"
 import {
   BadgeDollarSign,
   UserCheck,
@@ -14,7 +15,6 @@ import {
   Headphones,
   Award,
   Sparkles,
-  Lock,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
@@ -124,7 +124,13 @@ export function WhyChooseUsSection() {
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto mb-12 sm:mb-16"
+        >
           <div className="inline-flex items-center gap-2 rounded-full border border-[#e77952]/20 bg-[#e77952]/10 px-3.5 py-1 text-xs font-semibold text-[#e77952] dark:border-[#e77952]/30 dark:bg-[#e77952]/15 dark:text-[#f49372] mb-3.5">
             <Sparkles className="size-3.5" />
             <span>Platform Advantages</span>
@@ -139,17 +145,39 @@ export function WhyChooseUsSection() {
             contractors, and creators. Experience transparent rates, certified
             fleets, and seamless digital booking designed for peace of mind.
           </p>
-        </div>
+        </motion.div>
 
         {/* 4 Core Benefit Cards Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7">
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-40px" }}
+          variants={{
+            hidden: {},
+            visible: {
+              transition: {
+                staggerChildren: 0.1,
+              },
+            },
+          }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-7"
+        >
           {benefits.map((benefit) => {
             const Icon = benefit.icon
 
             return (
-              <div
+              <motion.div
                 key={benefit.id}
-                className={`group relative flex flex-col justify-between rounded-2xl sm:rounded-3xl border border-neutral-200/80 bg-neutral-50/50 p-6 sm:p-7 transition-all duration-300 hover:-translate-y-1.5 hover:bg-white hover:shadow-xl dark:border-neutral-800 dark:bg-neutral-900/60 dark:hover:bg-neutral-900 ${benefit.borderColor} ${benefit.hoverShadow}`}
+                variants={{
+                  hidden: { opacity: 0, y: 24 },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+                  },
+                }}
+                whileHover={{ y: -6 }}
+                className={`group relative flex flex-col justify-between rounded-2xl sm:rounded-3xl border border-neutral-200/80 bg-neutral-50/50 p-6 sm:p-7 transition-all duration-300 hover:bg-white hover:shadow-xl dark:border-neutral-800 dark:bg-neutral-900/60 dark:hover:bg-neutral-900 ${benefit.borderColor} ${benefit.hoverShadow}`}
               >
                 <div>
                   {/* Icon & Tagline */}
@@ -187,13 +215,19 @@ export function WhyChooseUsSection() {
                     </div>
                   ))}
                 </div>
-              </div>
+              </motion.div>
             )
           })}
-        </div>
+        </motion.div>
 
         {/* Bottom Trust & Stats Strip */}
-        <div className="mt-12 sm:mt-16 rounded-2xl sm:rounded-3xl border border-neutral-200/90 bg-neutral-50/80 p-6 sm:p-8 dark:border-neutral-800 dark:bg-neutral-900/80">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mt-12 sm:mt-16 rounded-2xl sm:rounded-3xl border border-neutral-200/90 bg-neutral-50/80 p-6 sm:p-8 dark:border-neutral-800 dark:bg-neutral-900/80"
+        >
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 items-center divide-y md:divide-y-0 md:divide-x divide-neutral-200/80 dark:divide-neutral-800/80">
             {stats.map((stat, idx) => {
               const StatIcon = stat.icon
@@ -243,9 +277,19 @@ export function WhyChooseUsSection() {
                   <ArrowRight className="size-3.5" />
                 </Button>
               </Link>
+
+              <Link href="/dashboard/owner/add-equipment" className="w-full sm:w-auto">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-10 px-4.5 rounded-xl font-semibold border-neutral-300 dark:border-neutral-700 w-full sm:w-auto cursor-pointer"
+                >
+                  <span>List Your Fleet</span>
+                </Button>
+              </Link>
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   )

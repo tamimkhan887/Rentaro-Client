@@ -4,6 +4,7 @@ import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { motion } from "framer-motion"
 import {
   MapPin,
   ArrowRight,
@@ -11,9 +12,7 @@ import {
   CheckCircle2,
   Boxes,
   Eye,
-  Layers,
   Wrench,
-  ShieldCheck,
   Tag,
   AlertCircle,
 } from "lucide-react"
@@ -132,7 +131,13 @@ export function FeaturedEquipment({ initialEquipments }: FeaturedEquipmentProps)
     <section className="relative py-16 sm:py-20 lg:py-24 bg-white dark:bg-neutral-950 border-t border-neutral-200/70 dark:border-neutral-800/80">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10 sm:mb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10 sm:mb-12"
+        >
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-[#e77952]/20 bg-[#e77952]/10 px-3 py-1 text-xs font-semibold text-[#e77952] dark:border-[#e77952]/30 dark:bg-[#e77952]/15 dark:text-[#f49372] mb-3">
               <Sparkles className="size-3.5" />
@@ -154,7 +159,7 @@ export function FeaturedEquipment({ initialEquipments }: FeaturedEquipmentProps)
             <span>Explore All Equipment</span>
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
           </Link>
-        </div>
+        </motion.div>
 
         {/* Loading State / Skeletons */}
         {loading && (
@@ -164,7 +169,7 @@ export function FeaturedEquipment({ initialEquipments }: FeaturedEquipmentProps)
                 key={i}
                 className="overflow-hidden rounded-2xl border border-neutral-200 bg-neutral-50 p-4 dark:border-neutral-800 dark:bg-neutral-900 animate-pulse"
               >
-                <div className="aspect-16/10 w-full rounded-xl bg-neutral-200 dark:bg-neutral-800 mb-4" />
+                <div className="aspect-[16/10] w-full rounded-xl bg-neutral-200 dark:bg-neutral-800 mb-4" />
                 <div className="h-4 w-1/3 rounded bg-neutral-200 dark:bg-neutral-800 mb-2" />
                 <div className="h-6 w-3/4 rounded bg-neutral-200 dark:bg-neutral-800 mb-3" />
                 <div className="h-4 w-full rounded bg-neutral-200 dark:bg-neutral-800 mb-4" />
@@ -210,21 +215,43 @@ export function FeaturedEquipment({ initialEquipments }: FeaturedEquipmentProps)
           </div>
         )}
 
-        {/* 6 Equipment Cards Grid */}
+        {/* 6 Equipment Cards Grid with Staggered Motion */}
         {!loading && !error && equipments.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-40px" }}
+            variants={{
+              hidden: {},
+              visible: {
+                transition: {
+                  staggerChildren: 0.1,
+                },
+              },
+            }}
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+          >
             {equipments.slice(0, 6).map((item) => {
               const categoryBadgeClass =
                 categoryColorMap[item.category] ||
                 "bg-neutral-500/10 text-neutral-700 border-neutral-500/20 dark:bg-neutral-500/20 dark:text-neutral-300"
 
               return (
-                <div
+                <motion.div
                   key={item._id || item.id || item.name}
-                  className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/80 bg-white transition-all duration-300 hover:-translate-y-1 hover:border-[#e77952]/40 hover:shadow-xl dark:border-neutral-800 dark:bg-neutral-900/90 dark:hover:border-[#e77952]/50"
+                  variants={{
+                    hidden: { opacity: 0, y: 24 },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                      transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+                    },
+                  }}
+                  whileHover={{ y: -6 }}
+                  className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-neutral-200/80 bg-white transition-all duration-300 hover:border-[#e77952]/40 hover:shadow-xl dark:border-neutral-800 dark:bg-neutral-900/90 dark:hover:border-[#e77952]/50"
                 >
                   {/* Card Media Header */}
-                  <div className="relative aspect-16/10 w-full overflow-hidden bg-neutral-100 dark:bg-neutral-800">
+                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-neutral-100 dark:bg-neutral-800">
                     <Image
                       src={
                         item.imageUrl ||
@@ -238,7 +265,7 @@ export function FeaturedEquipment({ initialEquipments }: FeaturedEquipmentProps)
                     />
 
                     {/* Gradient overlay for readability */}
-                    <div className="absolute inset-0 bg-linear-to-t from-neutral-950/70 via-transparent to-neutral-950/20" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/70 via-transparent to-neutral-950/20" />
 
                     {/* Top Badges */}
                     <div className="absolute top-3 left-3 right-3 flex items-center justify-between gap-2">
@@ -290,7 +317,7 @@ export function FeaturedEquipment({ initialEquipments }: FeaturedEquipmentProps)
                       {item.condition && (
                         <span className="inline-flex items-center gap-1 rounded-md bg-neutral-100 px-2 py-1 text-[11px] font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300">
                           <Wrench className="size-3 text-neutral-400" />
-                          <span className="truncate max-w-32.5">{item.condition}</span>
+                          <span className="truncate max-w-[130px]">{item.condition}</span>
                         </span>
                       )}
                       {item.quantity && (
@@ -330,13 +357,14 @@ export function FeaturedEquipment({ initialEquipments }: FeaturedEquipmentProps)
                       </Button>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               )
             })}
-          </div>
+          </motion.div>
         )}
       </div>
     </section>
   )
 }
+
 export default FeaturedEquipment

@@ -3,6 +3,7 @@
 import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
+import { motion } from "framer-motion"
 import {
   HardHat,
   Camera,
@@ -11,7 +12,6 @@ import {
   Cpu,
   PartyPopper,
   ArrowRight,
-  Sparkles,
   Layers,
   ChevronRight,
 } from "lucide-react"
@@ -40,11 +40,11 @@ export const categoryList: CategoryCardData[] = [
     examples: ["Excavators", "Bulldozers", "Cranes", "Rollers"],
     itemCount: "120+ Gear",
     image:
-      "https://plus.unsplash.com/premium_photo-1681989490797-dbe51c438b61?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D",
+      "https://images.unsplash.com/photo-1541888946425-d0fbb186c5f8?auto=format&fit=crop&w=800&q=80",
     icon: HardHat,
     badgeColor: "bg-[#e77952]/15 text-[#e77952] border-[#e77952]/30",
-    accentBorder: "group-hover:border-[#e77952]/60",
-    glowColor: "group-hover:shadow-[#e77952]/15",
+    accentBorder: "hover:border-[#e77952]/60",
+    glowColor: "hover:shadow-[#e77952]/15",
   },
   {
     id: "photography",
@@ -58,8 +58,8 @@ export const categoryList: CategoryCardData[] = [
       "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=80",
     icon: Camera,
     badgeColor: "bg-purple-500/15 text-purple-600 dark:text-purple-400 border-purple-500/30",
-    accentBorder: "group-hover:border-purple-500/60",
-    glowColor: "group-hover:shadow-purple-500/15",
+    accentBorder: "hover:border-purple-500/60",
+    glowColor: "hover:shadow-purple-500/15",
   },
   {
     id: "vehicles",
@@ -73,8 +73,8 @@ export const categoryList: CategoryCardData[] = [
       "https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?auto=format&fit=crop&w=800&q=80",
     icon: Truck,
     badgeColor: "bg-blue-500/15 text-blue-600 dark:text-blue-400 border-blue-500/30",
-    accentBorder: "group-hover:border-blue-500/60",
-    glowColor: "group-hover:shadow-blue-500/15",
+    accentBorder: "hover:border-blue-500/60",
+    glowColor: "hover:shadow-blue-500/15",
   },
   {
     id: "agriculture",
@@ -88,8 +88,8 @@ export const categoryList: CategoryCardData[] = [
       "https://images.unsplash.com/photo-1592982537447-7440770cbfc9?auto=format&fit=crop&w=800&q=80",
     icon: Tractor,
     badgeColor: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30",
-    accentBorder: "group-hover:border-emerald-500/60",
-    glowColor: "group-hover:shadow-emerald-500/15",
+    accentBorder: "hover:border-emerald-500/60",
+    glowColor: "hover:shadow-emerald-500/15",
   },
   {
     id: "electronics",
@@ -103,8 +103,8 @@ export const categoryList: CategoryCardData[] = [
       "https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=800&q=80",
     icon: Cpu,
     badgeColor: "bg-cyan-500/15 text-cyan-600 dark:text-cyan-400 border-cyan-500/30",
-    accentBorder: "group-hover:border-cyan-500/60",
-    glowColor: "group-hover:shadow-cyan-500/15",
+    accentBorder: "hover:border-cyan-500/60",
+    glowColor: "hover:shadow-cyan-500/15",
   },
   {
     id: "events",
@@ -118,8 +118,8 @@ export const categoryList: CategoryCardData[] = [
       "https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?auto=format&fit=crop&w=800&q=80",
     icon: PartyPopper,
     badgeColor: "bg-rose-500/15 text-rose-600 dark:text-rose-400 border-rose-500/30",
-    accentBorder: "group-hover:border-rose-500/60",
-    glowColor: "group-hover:shadow-rose-500/15",
+    accentBorder: "hover:border-rose-500/60",
+    glowColor: "hover:shadow-rose-500/15",
   },
 ]
 
@@ -128,7 +128,13 @@ export function CategoriesSection() {
     <section className="relative py-16 sm:py-20 lg:py-24 bg-neutral-50/70 dark:bg-neutral-900/40 border-t border-neutral-200/70 dark:border-neutral-800/80">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10 sm:mb-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-40px" }}
+          transition={{ duration: 0.6 }}
+          className="flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-10 sm:mb-12"
+        >
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-[#e77952]/20 bg-[#e77952]/10 px-3 py-1 text-xs font-semibold text-[#e77952] dark:border-[#e77952]/30 dark:bg-[#e77952]/15 dark:text-[#f49372] mb-3">
               <Layers className="size-3.5" />
@@ -150,85 +156,122 @@ export function CategoriesSection() {
             <span>View All Categories</span>
             <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
           </Link>
-        </div>
+        </motion.div>
 
-        {/* 6 Categories Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        {/* 6 Categories Grid with Framer Motion */}
+        <motion.div
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-40px" }}
+          variants={{
+            hidden: {},
+            visible: {
+              transition: {
+                staggerChildren: 0.1,
+              },
+            },
+          }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+        >
           {categoryList.map((category) => {
             const IconComponent = category.icon
 
             return (
-              <div
+              <motion.div
                 key={category.id}
-                className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl sm:rounded-3xl border border-neutral-200/80 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl dark:border-neutral-800 dark:bg-neutral-900/90 ${category.accentBorder} ${category.glowColor}`}
+                variants={{
+                  hidden: { opacity: 0, y: 24 },
+                  visible: {
+                    opacity: 1,
+                    y: 0,
+                    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
+                  },
+                }}
+                whileHover={{ y: -6 }}
               >
-                {/* Background Image with Overlay */}
-                <div className="relative aspect-video w-full overflow-hidden rounded-xl sm:rounded-2xl bg-neutral-100 dark:bg-neutral-800 mb-5">
-                  <Image
-                    src={category.image}
-                    alt={category.name}
-                    fill
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                    className="object-cover object-center transition-transform duration-700 group-hover:scale-108"
-                    loading="lazy"
-                  />
+                <Link
+                  href={`/equipment?category=${encodeURIComponent(category.name)}`}
+                  className={`group relative flex h-full flex-col justify-between overflow-hidden rounded-2xl sm:rounded-3xl border border-neutral-200/80 bg-white p-6 shadow-sm transition-all duration-300 hover:shadow-xl dark:border-neutral-800 dark:bg-neutral-900/90 ${category.accentBorder} ${category.glowColor}`}
+                >
+                  {/* Background Image with Overlay */}
+                  <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl sm:rounded-2xl bg-neutral-100 dark:bg-neutral-800 mb-5">
+                    <Image
+                      src={category.image}
+                      alt={category.name}
+                      fill
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      className="object-cover object-center transition-transform duration-700 group-hover:scale-108"
+                      loading="lazy"
+                    />
 
-                  {/* Gradient Overlays */}
-                  <div className="absolute inset-0 bg-linear-to-t from-neutral-950/85 via-neutral-950/30 to-transparent" />
+                    {/* Gradient Overlays */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-neutral-950/85 via-neutral-950/30 to-transparent" />
 
-                  {/* Top Floating Badge & Icon */}
-                  <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
-                    <div
-                      className={`flex size-9 items-center justify-center rounded-xl border backdrop-blur-md shadow-sm transition-transform duration-300 group-hover:scale-110 ${category.badgeColor}`}
-                    >
-                      <IconComponent className="size-4.5" />
+                    {/* Top Floating Badge & Icon */}
+                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                      <div
+                        className={`flex size-9 items-center justify-center rounded-xl border backdrop-blur-md shadow-sm transition-transform duration-300 group-hover:scale-110 ${category.badgeColor}`}
+                      >
+                        <IconComponent className="size-4.5" />
+                      </div>
+
+                      <span className="inline-flex items-center rounded-full bg-black/60 px-2.5 py-0.5 text-[11px] font-semibold text-white backdrop-blur-md">
+                        {category.itemCount}
+                      </span>
                     </div>
 
-                    <span className="inline-flex items-center rounded-full bg-black/60 px-2.5 py-0.5 text-[11px] font-semibold text-white backdrop-blur-md">
-                      {category.itemCount}
-                    </span>
-                  </div>
-
-                  {/* Tagline on image bottom */}
-                  <div className="absolute bottom-3 left-3 right-3 text-white">
-                    <p className="text-xs font-medium text-neutral-300">
-                      {category.tagline}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Card Text Content */}
-                <div className="flex flex-1 flex-col justify-between">
-                  <div>
-                    {/* Category Name */}
-                    <h3 className="text-xl font-bold tracking-tight text-neutral-900 transition-colors group-hover:text-[#e77952] dark:text-white dark:group-hover:text-[#f49372]">
-                      {category.name}
-                    </h3>
-
-                    {/* Description */}
-                    <p className="mt-2 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2 leading-relaxed">
-                      {category.description}
-                    </p>
-
-                    {/* Example Equipment Tags */}
-                    <div className="mt-4 flex flex-wrap gap-1.5">
-                      {category.examples.map((ex) => (
-                        <span
-                          key={ex}
-                          className="rounded-md bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
-                        >
-                          {ex}
-                        </span>
-                      ))}
+                    {/* Tagline on image bottom */}
+                    <div className="absolute bottom-3 left-3 right-3 text-white">
+                      <p className="text-xs font-medium text-neutral-300">
+                        {category.tagline}
+                      </p>
                     </div>
                   </div>
-                </div>
-              </div>
+
+                  {/* Card Text Content */}
+                  <div className="flex flex-1 flex-col justify-between">
+                    <div>
+                      {/* Category Name */}
+                      <h3 className="text-xl font-bold tracking-tight text-neutral-900 transition-colors group-hover:text-[#e77952] dark:text-white dark:group-hover:text-[#f49372]">
+                        {category.name}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="mt-2 text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2 leading-relaxed">
+                        {category.description}
+                      </p>
+
+                      {/* Example Equipment Tags */}
+                      <div className="mt-4 flex flex-wrap gap-1.5">
+                        {category.examples.map((ex) => (
+                          <span
+                            key={ex}
+                            className="rounded-md bg-neutral-100 px-2 py-0.5 text-[11px] font-medium text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300"
+                          >
+                            {ex}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Card Action Link */}
+                    <div className="mt-5 flex items-center justify-between pt-4 border-t border-neutral-100 dark:border-neutral-800/80">
+                      <span className="text-xs font-semibold text-[#e77952] dark:text-[#f49372] group-hover:underline">
+                        Explore Equipment
+                      </span>
+                      <div className="flex size-7 items-center justify-center rounded-full bg-[#e77952]/10 text-[#e77952] transition-transform duration-300 group-hover:translate-x-1 dark:bg-[#e77952]/20 dark:text-[#f49372]">
+                        <ChevronRight className="size-4" />
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </motion.div>
             )
           })}
-        </div>
+        </motion.div>
       </div>
     </section>
   )
 }
+
 export default CategoriesSection
