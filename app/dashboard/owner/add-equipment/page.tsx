@@ -43,18 +43,12 @@ import { createEquipment } from "@/lib/actions/createEquipment"
 
 // Curated equipment categories for Rentora marketplace
 const categories = [
-  "Earthmoving & Excavation",
-  "Heavy Lifting & Cranes",
-  "Compaction & Roadwork",
-  "Concrete & Masonry",
-  "Material Handling & Forklifts",
-  "Power & Industrial Generators",
-  "Aerial Work Platforms (Scissor & Boom)",
-  "Commercial Trucks & Hauling",
-  "Drilling & Trenching",
-  "Air Compressors & Pneumatics",
-  "Agricultural Machinery",
-  "Other Heavy Machinery",
+  "Construction Equipment",
+  "Photography Equipment",
+  "Vehicles & Transportation",
+  "Agriculture Equipment",
+  "Electronics",
+  "Event Equipment",
 ] as const
 
 const rentalTypes = [
@@ -78,7 +72,7 @@ export default function OwnerAddEquipmentPage() {
   const [formData, setFormData] = React.useState({
     name: "",
     description: "",
-    category: "Earthmoving & Excavation",
+    category: "Construction Equipment",
     location: "",
     price: "",
     rentalType: "Daily",
@@ -127,7 +121,7 @@ export default function OwnerAddEquipmentPage() {
     setFormData({
       name: "",
       description: "",
-      category: "Earthmoving & Excavation",
+      category: "Construction Equipment",
       location: "",
       price: "",
       rentalType: "Daily",

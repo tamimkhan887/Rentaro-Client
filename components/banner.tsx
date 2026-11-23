@@ -21,11 +21,12 @@ import {
 import { Button } from "@/components/ui/button"
 
 const popularCategories = [
-  "Earthmoving & Excavation",
-  "Heavy Lifting & Cranes",
-  "Compaction & Roadwork",
-  "Material Handling & Forklifts",
-  "Power & Industrial Generators",
+  "Construction Equipment",
+  "Photography Equipment",
+  "Vehicles & Transportation",
+  "Agriculture Equipment",
+  "Electronics",
+  "Event Equipment",
 ]
 
 export function Banner() {
@@ -54,9 +55,9 @@ export function Banner() {
       />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 items-center gap-10 lg:grid-cols-12 lg:gap-12">
+        <div className="grid grid-cols-1  items-center gap-10 lg:grid-cols-12 lg:gap-12">
           {/* Left Column: Hero Copy & Value Proposition */}
-          <div className="space-y-6 sm:space-y-8 lg:col-span-7">
+          <div className="space-y-6 sm:space-y-8 lg:col-span-7 order-2 lg:order-1">
             {/* Pill Badge */}
             <div className="inline-flex items-center gap-2 rounded-full border border-[#e77952]/20 bg-[#e77952]/10 px-3.5 py-1.5 text-xs font-semibold text-[#e77952] transition-colors dark:border-[#e77952]/30 dark:bg-[#e77952]/15 dark:text-[#f49372]">
               <Sparkles className="size-3.5 animate-pulse text-[#e77952]" />
@@ -152,7 +153,7 @@ export function Banner() {
           </div>
 
           {/* Right Column: High Quality Visual Showcase */}
-          <div className="relative lg:col-span-5">
+          <div className="relative lg:col-span-5 order-1 lg:order-2">
             {/* Ambient Background Box / Decorative Elements */}
             <div className="relative mx-auto max-w-md lg:max-w-none">
               <div className="relative overflow-hidden rounded-2xl sm:rounded-3xl border border-neutral-200/80 bg-neutral-100 shadow-2xl transition-all dark:border-neutral-800 dark:bg-neutral-900">
@@ -172,15 +173,9 @@ export function Banner() {
 
                   {/* Bottom Image Overlay Details */}
                   <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-6 sm:right-6 text-white">
-                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e77952]/90 backdrop-blur-md px-2.5 py-0.5 text-[11px] font-semibold text-white uppercase tracking-wider mb-1.5">
+                    <span className="inline-flex items-center gap-1.5 rounded-full bg-[#e77952]/90 backdrop-blur-md px-2.5 py-0.5 text-[11px] font-semibold text-white uppercase tracking-wider sm:mb-8.5">
                       <TrendingUp className="size-3" /> Most Popular
                     </span>
-                    <h3 className="text-lg sm:text-xl font-bold tracking-tight">
-                      Caterpillar 320 GC Excavator
-                    </h3>
-                    <p className="text-xs sm:text-sm text-neutral-200 line-clamp-1">
-                      Ready for deployment with automated grade control &amp; heavy bucket.
-                    </p>
                   </div>
                 </div>
               </div>

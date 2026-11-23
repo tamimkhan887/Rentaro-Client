@@ -1,9 +1,20 @@
+export const EQUIPMENT_CATEGORIES = [
+  "Construction Equipment",
+  "Photography Equipment",
+  "Vehicles & Transportation",
+  "Agriculture Equipment",
+  "Electronics",
+  "Event Equipment",
+] as const
+
+export type EquipmentCategory = (typeof EQUIPMENT_CATEGORIES)[number]
+
 export interface Equipment {
   id?: string
   _id?: string
   name: string
   description: string
-  category: string
+  category: EquipmentCategory | string
   location: string
   price: number
   rentalType: "Daily" | "Weekly" | "Monthly" | string
