@@ -1,7 +1,9 @@
+import { Banner } from "@/components/banner"
+
 export default function HomePage() {
   return (
-  <div>
-
-  </div>
+    <main className="min-h-screen bg-background">
+      <Banner />
+    </main>
   )
 }
