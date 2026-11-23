@@ -40,7 +40,7 @@ export const categoryList: CategoryCardData[] = [
     examples: ["Excavators", "Bulldozers", "Cranes", "Rollers"],
     itemCount: "120+ Gear",
     image:
-      "https://images.unsplash.com/photo-1541888946425-d0fbb186c5f8?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1779285756094-85ddc78ead65?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=NHwxMjA3fDA%3D",
     icon: HardHat,
     badgeColor: "bg-[#e77952]/15 text-[#e77952] border-[#e77952]/30",
     accentBorder: "hover:border-[#e77952]/60",
