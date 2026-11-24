@@ -43,3 +43,39 @@ export interface CreateEquipmentResponse {
   message?: string
   [key: string]: unknown
 }
+
+export interface FavoriteItem {
+  _id?: string
+  id?: string
+  userEmail: string
+  equipmentId: string
+  equipment: Equipment
+  createdAt?: string
+}
+
+export interface Booking {
+  _id?: string
+  id?: string
+  equipmentId: string
+  equipmentName: string
+  equipmentImage: string
+  rentalPrice: number
+  rentalType: string
+  ownerEmail?: string
+  ownerName?: string
+  userEmail: string
+  userName: string
+  startDate: string
+  endDate: string
+  quantity: number
+  contactNumber: string
+  deliveryAddress: string
+  additionalNotes?: string
+  totalPrice: number
+  status: "Pending" | "Confirmed" | "Completed" | "Cancelled" | string
+  createdAt?: string
+}
+
+export type BookingInput = Omit<Booking, "_id" | "id" | "createdAt" | "status"> & {
+  status?: string
+}
