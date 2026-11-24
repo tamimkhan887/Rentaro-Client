@@ -308,7 +308,7 @@ export default function DashboardLayout({
     <div className="min-h-[calc(100vh-4rem)] flex flex-col bg-[#FDFBF9] dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
       <div className="flex-1 flex w-full">
         {/* Desktop Left Sidebar (Sticky below main navbar) */}
-        <aside className="hidden lg:flex w-64 xl:w-72 shrink-0 border-r border-neutral-200/80 dark:border-neutral-800/80 bg-neutral-50/50 dark:bg-neutral-925 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
+        <aside className="hidden lg:flex w-64 xl:w-72 shrink-0 border-r border-neutral-200/80 dark:border-neutral-800/80 bg-neutral-50/50 dark:bg-neutral-950 sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
           {renderSidebarContent()}
         </aside>
 

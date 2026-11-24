@@ -1,9 +1,10 @@
+
 "use client"
 
 import * as React from "react"
 import Image from "next/image"
 import Link from "next/link"
-import { useRouter } from "next/navigation"
+import { useRouter, usePathname } from "next/navigation"
 import { Menu, X, LogOut, LayoutDashboard } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -23,7 +24,7 @@ interface NavbarProps {
 }
 
 const defaultNavLinks: NavLinkItem[] = [
-  { label: "Home", href: "/", isActive: true },
+  { label: "Home", href: "/" },
   { label: "All Equipment", href: "/equipment" },
   { label: "About Us", href: "/about" },
 ]
@@ -34,13 +35,25 @@ export function Navbar({
 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false)
   const [isSigningOut, setIsSigningOut] = React.useState(false)
+
   const router = useRouter()
+  const pathname = usePathname()
 
   const { data: session } = authClient.useSession()
   const user = session?.user
 
-  // Compute role-based dashboard destination
+  // Check active route
+  const isLinkActive = (href: string) => {
+    if (href === "/") {
+      return pathname === "/"
+    }
+
+    return pathname === href || pathname.startsWith(`${href}/`)
+  }
+
+  // Role-based dashboard destination
   const role = (user?.role || "").toLowerCase()
+
   const dashboardHref =
     role === "admin"
       ? "/dashboard/admin"
@@ -48,16 +61,19 @@ export function Navbar({
         ? "/dashboard/owner"
         : "/dashboard/customer"
 
-  // Handle user sign out
+  // Handle sign out
   const handleSignOut = async () => {
     try {
       setIsSigningOut(true)
+
       await authClient.signOut()
+
       toast.add({
         title: "Signed Out",
         description: "You have been logged out successfully.",
         type: "success",
       })
+
       router.push("/")
       router.refresh()
     } catch (err: unknown) {
@@ -80,14 +96,14 @@ export function Navbar({
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        {/* Left Side: Brand Logo */}
+
+        {/* Brand Logo */}
         <div className="flex items-center gap-8 lg:gap-12">
           <Link
             href="/"
             className="flex items-center shrink-0 transition-opacity hover:opacity-90"
             aria-label="Rentora Home"
           >
-            {/* Light Mode Logo */}
             <Image
               src="/Logo.png"
               alt="Rentora Logo"
@@ -96,7 +112,7 @@ export function Navbar({
               className="h-14 md:h-14 w-auto object-contain dark:hidden"
               priority
             />
-            {/* Dark Mode Logo with high-contrast text */}
+
             <Image
               src="/Logo-dark.png"
               alt="Rentora Logo"
@@ -108,37 +124,40 @@ export function Navbar({
           </Link>
         </div>
 
-        {/* Center: Desktop Navigation Links */}
-        <div>
-          <nav
-            className="hidden md:flex items-center gap-6 lg:gap-8"
-            aria-label="Main Navigation"
-          >
-            {navLinks.map((link) => (
+        {/* Desktop Navigation */}
+        <nav
+          className="hidden md:flex items-center gap-6 lg:gap-8"
+          aria-label="Main Navigation"
+        >
+          {navLinks.map((link) => {
+            const active = isLinkActive(link.href)
+
+            return (
               <Link
                 key={link.label}
                 href={link.href}
+                aria-current={active ? "page" : undefined}
                 className={cn(
                   "text-sm font-medium transition-colors hover:text-[#e77952] dark:hover:text-[#e77952]",
-                  link.isActive
-                    ? "text-neutral-900 font-semibold dark:text-neutral-100"
+                  active
+                    ? "text-[#e77952] font-semibold"
                     : "text-neutral-600 dark:text-neutral-300"
                 )}
               >
                 {link.label}
               </Link>
-            ))}
-          </nav>
-        </div>
+            )
+          })}
+        </nav>
 
-        {/* Right Side: Actions (Desktop) */}
+        {/* Desktop Actions */}
         <div className="hidden md:flex items-center gap-3">
-          {/* Dark / Light Mode Toggle */}
           <ThemeToggle />
 
           {user ? (
             <div className="flex items-center gap-2">
-              {/* Role-Based Dashboard Direct Button */}
+
+              {/* Dashboard */}
               <Link href={dashboardHref}>
                 <Button
                   variant="brand"
@@ -150,7 +169,7 @@ export function Navbar({
                 </Button>
               </Link>
 
-              {/* Sign Out Button */}
+              {/* Sign Out */}
               <Button
                 variant="ghost"
                 size="lg"
@@ -160,12 +179,15 @@ export function Navbar({
                 aria-label="Sign out"
               >
                 <LogOut className="size-4" />
-                <span>{isSigningOut ? "Signing Out..." : "Sign Out"}</span>
+                <span>
+                  {isSigningOut ? "Signing Out..." : "Sign Out"}
+                </span>
               </Button>
             </div>
           ) : (
             <div className="flex items-center gap-2">
-              {/* Log In Button */}
+
+              {/* Login */}
               <Link href="/login">
                 <Button
                   variant="ghost"
@@ -176,7 +198,7 @@ export function Navbar({
                 </Button>
               </Link>
 
-              {/* Register Button */}
+              {/* Register */}
               <Link href="/register">
                 <Button
                   variant="brand"
@@ -190,61 +212,84 @@ export function Navbar({
           )}
         </div>
 
-        {/* Mobile Controls (Theme Toggle + Hamburger Menu) */}
+        {/* Mobile Controls */}
         <div className="flex md:hidden items-center gap-2">
           <ThemeToggle />
+
           <Button
             variant="ghost"
             size="icon"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             aria-label="Toggle mobile menu"
+            aria-expanded={mobileMenuOpen}
             className="size-9 rounded-lg text-neutral-700 hover:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800"
           >
-            {mobileMenuOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+            {mobileMenuOpen ? (
+              <X className="size-5" />
+            ) : (
+              <Menu className="size-5" />
+            )}
           </Button>
         </div>
       </div>
 
-      {/* Mobile Menu Dropdown */}
+      {/* Mobile Menu */}
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-neutral-200/80 bg-white/95 px-4 pt-3 pb-6 shadow-lg backdrop-blur-md dark:border-neutral-800/80 dark:bg-neutral-950/95 animate-in slide-in-from-top-2 duration-200">
-          <nav className="flex flex-col gap-2">
-            {navLinks.map((link) => (
-              <Link
-                key={link.label}
-                href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className={cn(
-                  "rounded-md px-3 py-2 text-base font-medium transition-colors",
-                  link.isActive
-                    ? "bg-neutral-100 text-neutral-900 font-semibold dark:bg-neutral-900 dark:text-white"
-                    : "text-neutral-600 hover:bg-neutral-50 hover:text-[#e77952] dark:text-neutral-300 dark:hover:bg-neutral-900/60 dark:hover:text-[#e77952]"
-                )}
-              >
-                {link.label}
-              </Link>
-            ))}
 
+          <nav className="flex flex-col gap-2" aria-label="Mobile Navigation">
+
+            {/* Mobile Navigation Links */}
+            {navLinks.map((link) => {
+              const active = isLinkActive(link.href)
+
+              return (
+                <Link
+                  key={link.label}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "rounded-md px-3 py-2 text-base font-medium transition-colors",
+                    active
+                      ? "bg-neutral-100 text-[#e77952] font-semibold dark:bg-neutral-900"
+                      : "text-neutral-600 hover:bg-neutral-50 hover:text-[#e77952] dark:text-neutral-300 dark:hover:bg-neutral-900/60"
+                  )}
+                >
+                  {link.label}
+                </Link>
+              )
+            })}
+
+            {/* Mobile Authentication Actions */}
             <div className="mt-4 flex flex-col gap-2.5 border-t border-neutral-200/70 pt-4 dark:border-neutral-800/70">
+
               {user ? (
                 <>
-                  {/* User Profile summary card */}
+                  {/* User Profile */}
                   <div className="flex items-center gap-3 px-3 py-2 rounded-xl bg-neutral-100/80 dark:bg-neutral-900">
                     <div className="flex size-9 items-center justify-center rounded-lg bg-[#e77952]/15 text-[#e77952] font-semibold text-sm">
-                      {user.name ? user.name.charAt(0).toUpperCase() : "U"}
+                      {user.name
+                        ? user.name.charAt(0).toUpperCase()
+                        : "U"}
                     </div>
+
                     <div className="min-w-0 flex-1">
                       <p className="text-xs font-semibold text-neutral-900 dark:text-neutral-100 truncate">
                         {user.name || "Authenticated User"}
                       </p>
+
                       <p className="text-[11px] text-neutral-500 dark:text-neutral-400 capitalize">
                         {user.role || "Customer"} Account
                       </p>
                     </div>
                   </div>
 
-                  {/* Role-Based Dashboard Direct Button for Mobile */}
-                  <Link href={dashboardHref} onClick={() => setMobileMenuOpen(false)}>
+                  {/* Dashboard */}
+                  <Link
+                    href={dashboardHref}
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     <Button
                       variant="brand"
                       size="lg"
@@ -255,7 +300,7 @@ export function Navbar({
                     </Button>
                   </Link>
 
-                  {/* Sign Out Button for Mobile */}
+                  {/* Sign Out */}
                   <Button
                     variant="outline"
                     size="lg"
@@ -267,12 +312,18 @@ export function Navbar({
                     className="w-full justify-center gap-2 text-rose-600 hover:text-rose-700 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-950/30 border-rose-200 dark:border-rose-900/50 h-10"
                   >
                     <LogOut className="size-4" />
-                    <span>{isSigningOut ? "Signing Out..." : "Sign Out"}</span>
+                    <span>
+                      {isSigningOut ? "Signing Out..." : "Sign Out"}
+                    </span>
                   </Button>
                 </>
               ) : (
                 <>
-                  <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                  {/* Login */}
+                  <Link
+                    href="/login"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     <Button
                       variant="outline"
                       size="lg"
@@ -281,7 +332,12 @@ export function Navbar({
                       Log In
                     </Button>
                   </Link>
-                  <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
+
+                  {/* Register */}
+                  <Link
+                    href="/register"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
                     <Button
                       variant="brand"
                       size="lg"
