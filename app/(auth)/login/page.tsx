@@ -51,7 +51,11 @@ export default function LoginPage() {
                     description: "Welcome back to Rentora!",
                     type: "success",
                 })
-                router.push("/")
+                const callbackUrl =
+                    (typeof window !== "undefined"
+                        ? new URLSearchParams(window.location.search).get("callbackUrl")
+                        : null) || "/"
+                router.push(callbackUrl)
                 router.refresh()
             }
 
@@ -76,10 +80,14 @@ export default function LoginPage() {
     // Handle Google login via Better Auth
     const handleGoogleLogin = async () => {
         setIsGoogleLoading(true)
+        const callbackUrl =
+            (typeof window !== "undefined"
+                ? new URLSearchParams(window.location.search).get("callbackUrl")
+                : null) || "/"
         try {
             const res = await authClient.signIn.social({
                 provider: "google",
-                callbackURL: "/",
+                callbackURL: callbackUrl,
             })
             if (res?.error) {
                 toast.add({
