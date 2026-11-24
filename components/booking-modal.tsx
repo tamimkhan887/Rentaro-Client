@@ -3,11 +3,10 @@
 import * as React from "react"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { Calendar, MapPin, ShieldCheck, CheckCircle2, AlertCircle, Loader2 } from "lucide-react"
+import { Calendar, MapPin, ShieldCheck, CheckCircle2, AlertCircle, Loader2, CreditCard, Lock } from "lucide-react"
 
 import { Equipment, BookingInput } from "@/types/equipment"
 import { useSession } from "@/lib/auth-client"
-import { createBooking } from "@/lib/api/bookings"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -140,7 +139,7 @@ export function BookingModal({
     setIsSubmitting(true)
 
     try {
-      const bookingData: BookingInput = {
+      const checkoutPayload = {
         equipmentId: (equipment._id || equipment.id || "") as string,
         equipmentName: equipment.name,
         equipmentImage: equipment.imageUrl || "",
@@ -159,24 +158,34 @@ export function BookingModal({
         totalPrice: estimatedTotal,
       }
 
-      const res = await createBooking(bookingData)
+      const res = await fetch("/api/checkout_sessions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(checkoutPayload),
+      })
 
-      if (res.error) {
-        setErrorMessage(res.error)
+      const data = await res.json()
+
+      if (!res.ok || data.error) {
+        setErrorMessage(data.error || "Failed to initialize Stripe checkout")
         return
       }
 
-      toast.add({
-        title: "Booking Submitted Successfully!",
-        description: `Your request for ${equipment.name} (${quantity} unit) has been placed.`,
-        type: "success",
-      })
-
-      onOpenChange(false)
-      onSuccess?.()
+      if (data.url) {
+        toast.add({
+          title: "Redirecting to Stripe Checkout...",
+          description: "Please complete your card payment on Stripe to finalize this booking.",
+          type: "info",
+        })
+        window.location.href = data.url
+      } else {
+        setErrorMessage("Stripe payment session URL was not returned.")
+      }
     } catch (err) {
-      console.error("Booking error:", err)
-      setErrorMessage("An unexpected error occurred while placing your booking.")
+      console.error("Stripe Booking error:", err)
+      setErrorMessage("An unexpected error occurred while connecting to Stripe.")
     } finally {
       setIsSubmitting(false)
     }
@@ -365,6 +374,17 @@ export function BookingModal({
             </div>
           </div>
 
+          {/* Stripe Pay First Notice */}
+          <div className="flex items-start gap-2.5 p-3 rounded-xl bg-[#635BFF]/10 border border-[#635BFF]/20 text-xs text-[#635BFF] dark:text-[#8881ff]">
+            <Lock className="h-4 w-4 shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold">Payment Required to Complete Booking</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">
+                You will be redirected to Stripe to pay securely. Once payment is confirmed, your booking is officially complete and confirmed.
+              </p>
+            </div>
+          </div>
+
           <DialogFooter className="pt-2 sm:justify-between gap-2 items-center">
             <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
               <ShieldCheck className="h-3.5 w-3.5 text-primary" />
@@ -383,17 +403,17 @@ export function BookingModal({
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full sm:w-auto text-sm gap-2"
+                className="w-full sm:w-auto text-sm gap-2 bg-[#635BFF] hover:bg-[#5349e4] text-white shadow font-semibold"
               >
                 {isSubmitting ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Reserving...</span>
+                    <span>Connecting to Stripe...</span>
                   </>
                 ) : (
                   <>
-                    <CheckCircle2 className="h-4 w-4" />
-                    <span>Confirm Booking</span>
+                    <CreditCard className="h-4 w-4" />
+                    <span>Pay with Stripe & Book (${estimatedTotal.toLocaleString()})</span>
                   </>
                 )}
               </Button>

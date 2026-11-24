@@ -73,9 +73,17 @@ export interface Booking {
   additionalNotes?: string
   totalPrice: number
   status: "Pending" | "Confirmed" | "Completed" | "Cancelled" | string
+  paymentStatus?: "Paid" | "Unpaid" | "Pending" | string
+  transactionId?: string
+  stripeSessionId?: string
+  paidAt?: string
   createdAt?: string
 }
 
 export type BookingInput = Omit<Booking, "_id" | "id" | "createdAt" | "status"> & {
   status?: string
+  paymentStatus?: string
+  transactionId?: string
+  stripeSessionId?: string
+  paidAt?: string
 }

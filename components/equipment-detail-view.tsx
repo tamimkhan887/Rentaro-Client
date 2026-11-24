@@ -34,9 +34,10 @@ import { BookingModal } from "@/components/booking-modal"
 
 interface EquipmentDetailViewProps {
   equipment: Equipment
+  paymentCanceled?: boolean
 }
 
-export function EquipmentDetailView({ equipment }: EquipmentDetailViewProps) {
+export function EquipmentDetailView({ equipment, paymentCanceled }: EquipmentDetailViewProps) {
   const router = useRouter()
   const { data: session } = useSession()
 
@@ -66,6 +67,17 @@ export function EquipmentDetailView({ equipment }: EquipmentDetailViewProps) {
       isMounted = false
     }
   }, [session?.user?.email, equipmentId])
+
+  // Show cancellation toast if user canceled in Stripe Checkout
+  React.useEffect(() => {
+    if (paymentCanceled) {
+      toast.add({
+        title: "Payment Canceled",
+        description: "Your Stripe payment was canceled. The equipment was not booked and no charges were made.",
+        type: "info",
+      })
+    }
+  }, [paymentCanceled])
 
   // Toggle favorite
   const handleToggleFavorite = async () => {

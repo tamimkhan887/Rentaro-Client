@@ -10,6 +10,7 @@ type ViewDetailsPageProps = {
   params: Promise<{
     id: string
   }>
+  searchParams?: Promise<{ [key: string]: string | string[] | undefined }>
 }
 
 export async function generateMetadata({
@@ -38,9 +39,13 @@ export async function generateMetadata({
 
 export default async function ViewDetailsPage({
   params,
+  searchParams,
 }: ViewDetailsPageProps) {
   const { id } = await params
-  const equipment = await getSingleEquipment(id)
+  const [equipment, resolvedSearchParams] = await Promise.all([
+    getSingleEquipment(id),
+    searchParams ? searchParams : Promise.resolve({} as Record<string, any>),
+  ])
 
   if (!equipment) {
     return (
@@ -74,5 +79,7 @@ export default async function ViewDetailsPage({
     )
   }
 
-  return <EquipmentDetailView equipment={equipment} />
+  const paymentCanceled = (resolvedSearchParams as Record<string, any>)?.payment_canceled === "true"
+
+  return <EquipmentDetailView equipment={equipment} paymentCanceled={paymentCanceled} />
 }

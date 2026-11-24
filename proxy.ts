@@ -25,10 +25,11 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  // Protect viewDetails (/equipment/:id+) and all dashboard routes (/dashboard/:path*)
+  // Protect viewDetails (/equipment/:id+), all dashboard routes (/dashboard/:path*), and checkout
   matcher: [
     "/equipment/:id+",
     "/dashboard/:path*",
+    "/checkout/:path*",
   ],
 };
 
