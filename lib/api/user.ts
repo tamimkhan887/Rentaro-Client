@@ -1,3 +1,5 @@
+import { authClient } from "@/lib/auth-client"
+
 export interface UserItem {
   _id?: string
   id?: string
@@ -18,6 +20,24 @@ export interface GetUsersOptions {
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"
 
+async function getAuthHeaders(): Promise<HeadersInit> {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("access-token")
+    if (token) return { authorization: `Bearer ${token}` }
+
+    try {
+      const session = await authClient.getSession()
+      const sessionToken = session?.data?.session?.token
+      if (sessionToken) {
+        return { authorization: `Bearer ${sessionToken}` }
+      }
+    } catch {
+      // Ignore session fetch error
+    }
+  }
+  return {}
+}
+
 /**
  * Fetch all users with optional search (name/email) and role filtering
  */
@@ -34,6 +54,7 @@ export async function getAllUsers(options?: GetUsersOptions): Promise<UserItem[]
     const queryString = params.toString() ? `?${params.toString()}` : ""
     const res = await fetch(`${BASE_URL}/users${queryString}`, {
       cache: "no-store",
+      headers: await getAuthHeaders(),
     })
 
     if (!res.ok) {
@@ -55,6 +76,7 @@ export async function getUserById(id: string): Promise<UserItem | null> {
   try {
     const res = await fetch(`${BASE_URL}/users/${id}`, {
       cache: "no-store",
+      headers: await getAuthHeaders(),
     })
     if (!res.ok) return null
     return await res.json()
@@ -76,6 +98,7 @@ export async function updateUserRole(
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        ...(await getAuthHeaders()),
       },
       body: JSON.stringify({ role }),
     })
@@ -103,6 +126,7 @@ export async function updateUser(
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        ...(await getAuthHeaders()),
       },
       body: JSON.stringify(data),
     })
@@ -127,6 +151,7 @@ export async function deleteUser(
   try {
     const res = await fetch(`${BASE_URL}/users/${userId}`, {
       method: "DELETE",
+      headers: await getAuthHeaders(),
     })
 
     const data = await res.json()
