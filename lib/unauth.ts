@@ -4,10 +4,19 @@ import { auth } from "./auth"
 import { redirect } from "next/navigation"
 
 export const getSession = async () => {
-    const session = await auth.api.getSession({
-        headers: await headers()
-    })
-    return session
+    try {
+        const session = await auth.api.getSession({
+            headers: await headers()
+        })
+        return session
+    } catch (err: any) {
+        // Rethrow Next.js dynamic rendering bailouts so routes correctly switch to dynamic rendering
+        if (err?.digest === "DYNAMIC_SERVER_USAGE" || err?.message?.includes("Dynamic server usage")) {
+            throw err;
+        }
+        console.error("Error retrieving session in getSession:", err);
+        return null;
+    }
 }
 
 export const requireRole = async (role: string) => {

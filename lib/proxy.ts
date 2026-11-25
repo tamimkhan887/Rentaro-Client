@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { auth } from "./auth";
 
 export async function proxy(request: NextRequest) {
     const { pathname, search } = request.nextUrl;
@@ -10,12 +9,12 @@ export async function proxy(request: NextRequest) {
         return NextResponse.next();
     }
 
-    // Check user session for private routes
-    const session = await auth.api.getSession({
-        headers: request.headers,
-    });
+    // Check for Better Auth session token in cookies (Edge-safe without database dependency)
+    const sessionToken =
+        request.cookies.get("better-auth.session_token")?.value ||
+        request.cookies.get("__Secure-better-auth.session_token")?.value;
 
-    if (!session) {
+    if (!sessionToken) {
         const loginUrl = new URL("/login", request.url);
         loginUrl.searchParams.set("callbackUrl", pathname + search);
         return NextResponse.redirect(loginUrl);
