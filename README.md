@@ -146,7 +146,6 @@ Create a `.env` file in `Rentora-Client/Rentora`:
 NEXT_PUBLIC_BACKEND_URL=http://localhost:5000
 BETTER_AUTH_SECRET=your_better_auth_secret
 BETTER_AUTH_URL=http://localhost:3000
-NEXT_PUBLIC_BETTER_AUTH_URL=http://localhost:3000
 MONGODB_URL=your_mongodb_connection_string
 
 # Stripe Configuration

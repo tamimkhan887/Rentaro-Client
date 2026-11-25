@@ -9,7 +9,7 @@ export async function POST(req: Request) {
     const origin =
       headersList.get('origin') ||
       headersList.get('referer')?.replace(/\/[^/]*$/, '') ||
-      process.env.NEXT_PUBLIC_BETTER_AUTH_URL ||
+      process.env.BETTER_AUTH_URL ||
       'http://localhost:3000'
 
     let data: Record<string, any> = {}
