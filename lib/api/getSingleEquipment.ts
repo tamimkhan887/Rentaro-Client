@@ -6,7 +6,9 @@ export const getSingleEquipment = async (
   id: string
 ): Promise<Equipment | null> => {
   try {
-    const res = await fetch(`${BASE_URL}/equipments/${id}`)
+    const res = await fetch(`${BASE_URL}/equipments/${id}`, {
+      cache: "no-store",
+    })
 
     if (!res.ok) {
       return null

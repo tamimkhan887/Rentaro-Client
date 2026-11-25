@@ -2,6 +2,14 @@ import { Equipment } from "@/types/equipment"
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"
 
+function getAuthHeaders(): HeadersInit {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("access-token")
+    if (token) return { authorization: `Bearer ${token}` }
+  }
+  return {}
+}
+
 export interface AdminEquipmentQueryOptions {
   search?: string
   status?: string
@@ -30,6 +38,7 @@ export async function getAllAdminEquipments(
     const queryString = params.toString() ? `?${params.toString()}` : ""
     const res = await fetch(`${BASE_URL}/equipments${queryString}`, {
       cache: "no-store",
+      headers: getAuthHeaders(),
     })
 
     if (!res.ok) {
@@ -56,6 +65,7 @@ export async function updateEquipmentStatus(
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
+        ...getAuthHeaders(),
       },
       body: JSON.stringify({ status }),
     })
@@ -83,6 +93,7 @@ export async function updateEquipmentDetails(
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
+        ...getAuthHeaders(),
       },
       body: JSON.stringify(data),
     })
@@ -107,6 +118,7 @@ export async function deleteEquipmentItem(
   try {
     const res = await fetch(`${BASE_URL}/equipments/${id}`, {
       method: "DELETE",
+      headers: getAuthHeaders(),
     })
 
     const data = await res.json()

@@ -1,11 +1,14 @@
-import { EquipmentInput, CreateEquipmentResponse } from "@/types/equipment"
+"use server"
 
-const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL
+import { EquipmentInput, CreateEquipmentResponse } from "@/types/equipment"
+import { authFetch } from "../unauth"
+
+const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"
 
 export async function createEquipment(
   equipment: EquipmentInput
 ): Promise<CreateEquipmentResponse> {
-  const response = await fetch(`${BASE_URL}/equipments`, {
+  const response = await authFetch(`${BASE_URL}/equipments`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

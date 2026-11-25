@@ -1,13 +1,13 @@
+"use server"
+
 import { Equipment } from "@/types/equipment"
+import { authFetch } from "../unauth"
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"
 
 export async function getOwnerEquipments(ownerEmail: string): Promise<Equipment[]> {
   try {
-    const res = await fetch(
-      `${BASE_URL}/equipments?ownerEmail=${encodeURIComponent(ownerEmail)}`,
-      { cache: "no-store" }
-    )
+    const res = await authFetch(`${BASE_URL}/equipments?ownerEmail=${encodeURIComponent(ownerEmail)}`) 
     if (!res.ok) {
       return []
     }
@@ -21,7 +21,7 @@ export async function getOwnerEquipments(ownerEmail: string): Promise<Equipment[
 
 export async function deleteEquipment(id: string): Promise<{ success: boolean; deletedCount?: number }> {
   try {
-    const res = await fetch(`${BASE_URL}/equipments/${id}`, {
+    const res = await authFetch(`${BASE_URL}/equipments/${id}`, {
       method: "DELETE",
     })
     if (!res.ok) {
@@ -39,7 +39,7 @@ export async function updateEquipment(
   data: Partial<Equipment>
 ): Promise<{ success: boolean; modifiedCount?: number; error?: string }> {
   try {
-    const res = await fetch(`${BASE_URL}/equipments/${id}`, {
+    const res = await authFetch(`${BASE_URL}/equipments/${id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",

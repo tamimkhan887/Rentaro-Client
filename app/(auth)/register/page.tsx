@@ -29,7 +29,6 @@ import {
     Copy,
     UserCheck,
     HardHat,
-    ShieldCheck,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { authClient } from "@/lib/auth-client"
@@ -179,6 +178,27 @@ export default function RegisterPage() {
             })
 
             if (data?.user) {
+                // Generate and store JWT access token upon successful registration
+                try {
+                    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"
+                    const jwtRes = await fetch(`${backendUrl}/jwt`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            email: data.user.email,
+                            name: data.user.name,
+                            role: formData.role,
+                            userId: data.user.id,
+                        }),
+                    })
+                    const jwtData = await jwtRes.json()
+                    if (jwtData?.token && typeof window !== "undefined") {
+                        localStorage.setItem("access-token", jwtData.token)
+                    }
+                } catch (jwtErr) {
+                    console.error("JWT token generation failed:", jwtErr)
+                }
+
                 setFormData({
                     name: "",
                     email: "",
@@ -257,12 +277,6 @@ export default function RegisterPage() {
                 title: "Owner",
                 desc: "List machinery",
                 icon: HardHat,
-            },
-            {
-                value: "admin",
-                title: "Admin",
-                desc: "Operations",
-                icon: ShieldCheck,
             },
         ]
 
@@ -358,12 +372,12 @@ export default function RegisterPage() {
                                     </div>
                                 </div>
 
-                                {/* 3. Role-Based Selection (Customer, Owner, Admin) */}
+                                {/* 3. Role-Based Selection (Customer, Owner) */}
                                 <div className="space-y-1.5">
                                     <Label className="text-xs font-medium text-neutral-700 dark:text-neutral-300">
                                         Account Role <span className="text-[#e77952]">*</span>
                                     </Label>
-                                    <div className="grid grid-cols-3 gap-2">
+                                    <div className="grid grid-cols-2 gap-3">
                                         {roles.map((r) => {
                                             const isSelected = formData.role === r.value
                                             const Icon = r.icon

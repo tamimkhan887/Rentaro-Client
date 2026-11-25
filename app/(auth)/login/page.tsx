@@ -46,6 +46,27 @@ export default function LoginPage() {
             })
 
             if (data?.user) {
+                // Generate and store JWT access token upon successful login
+                try {
+                    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"
+                    const jwtRes = await fetch(`${backendUrl}/jwt`, {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            email: data.user.email,
+                            name: data.user.name,
+                            role: (data.user as any)?.role,
+                            userId: data.user.id,
+                        }),
+                    })
+                    const jwtData = await jwtRes.json()
+                    if (jwtData?.token && typeof window !== "undefined") {
+                        localStorage.setItem("access-token", jwtData.token)
+                    }
+                } catch (jwtErr) {
+                    console.error("JWT token generation failed:", jwtErr)
+                }
+
                 toast.add({
                     title: "Login Successful",
                     description: "Welcome back to Rentora!",

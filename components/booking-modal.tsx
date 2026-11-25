@@ -58,7 +58,7 @@ export function BookingModal({
   const [errorMessage, setErrorMessage] = React.useState<string | null>(null)
 
   // Max available quantity
-  const maxQuantity = Math.max(1, equipment.quantity || 1)
+  const maxQuantity = Math.max(0, Number(equipment.quantity ?? 0))
 
   // Calculate duration and estimated total
   const { durationDays, unitCount, unitLabel, estimatedTotal } = React.useMemo(() => {
@@ -118,6 +118,11 @@ export function BookingModal({
 
     if (startDate > endDate) {
       setErrorMessage("Rental End Date cannot be earlier than Rental Start Date.")
+      return
+    }
+
+    if (maxQuantity <= 0) {
+      setErrorMessage("This equipment is currently out of stock and cannot be booked.")
       return
     }
 
@@ -293,9 +298,10 @@ export function BookingModal({
               <Input
                 id="quantity"
                 type="number"
-                min={1}
+                min={maxQuantity > 0 ? 1 : 0}
                 max={maxQuantity}
-                value={quantity}
+                disabled={maxQuantity <= 0}
+                value={maxQuantity > 0 ? quantity : 0}
                 onChange={(e) => {
                   const val = parseInt(e.target.value, 10)
                   setQuantity(isNaN(val) ? 1 : Math.max(1, Math.min(maxQuantity, val)))
@@ -303,8 +309,8 @@ export function BookingModal({
                 required
                 className="w-full text-sm"
               />
-              <p className="text-[11px] text-muted-foreground">
-                Max {maxQuantity} available
+              <p className={`text-[11px] ${maxQuantity <= 0 ? "text-destructive font-semibold" : "text-muted-foreground"}`}>
+                {maxQuantity > 0 ? `Max ${maxQuantity} unit(s) available` : "Out of stock (0 available)"}
               </p>
             </div>
 
@@ -402,7 +408,7 @@ export function BookingModal({
               </Button>
               <Button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || maxQuantity <= 0}
                 className="w-full sm:w-auto text-sm gap-2 bg-[#635BFF] hover:bg-[#5349e4] text-white shadow font-semibold"
               >
                 {isSubmitting ? (
@@ -410,6 +416,8 @@ export function BookingModal({
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span>Connecting to Stripe...</span>
                   </>
+                ) : maxQuantity <= 0 ? (
+                  <span>Out of Stock</span>
                 ) : (
                   <>
                     <CreditCard className="h-4 w-4" />

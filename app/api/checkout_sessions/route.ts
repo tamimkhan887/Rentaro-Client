@@ -60,6 +60,32 @@ export async function POST(req: Request) {
     const unitAmount = Math.max(50, Math.round(parsedTotal * 100))
 
     const parsedQty = Math.max(1, parseInt(String(quantity || 1), 10) || 1)
+
+    // Verify equipment availability and live stock
+    try {
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'http://localhost:5000'
+      const eqRes = await fetch(`${backendUrl}/equipments/${equipmentId}`, {
+        cache: 'no-store',
+      })
+      if (eqRes.ok) {
+        const eqData = await eqRes.json()
+        const availableStock = Number(eqData?.quantity ?? 0)
+        if (availableStock < parsedQty) {
+          return NextResponse.json(
+            {
+              error:
+                availableStock <= 0
+                  ? 'This equipment is currently out of stock.'
+                  : `Insufficient stock. Only ${availableStock} unit(s) available in stock.`,
+            },
+            { status: 400 }
+          )
+        }
+      }
+    } catch (checkErr) {
+      console.warn('Could not verify live stock before checkout:', checkErr)
+    }
+
     const validImages =
       equipmentImage && typeof equipmentImage === 'string' && equipmentImage.startsWith('http')
         ? [equipmentImage]

@@ -2,6 +2,14 @@ import { Equipment, FavoriteItem } from "@/types/equipment"
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"
 
+function getAuthHeaders(): HeadersInit {
+  if (typeof window !== "undefined") {
+    const token = localStorage.getItem("access-token")
+    if (token) return { authorization: `Bearer ${token}` }
+  }
+  return {}
+}
+
 export async function checkIsFavorite(
   userEmail: string,
   equipmentId: string
@@ -11,7 +19,10 @@ export async function checkIsFavorite(
       `${BASE_URL}/favorites/check?userEmail=${encodeURIComponent(
         userEmail
       )}&equipmentId=${encodeURIComponent(equipmentId)}`,
-      { cache: "no-store" }
+      {
+        cache: "no-store",
+        headers: getAuthHeaders(),
+      }
     )
     if (!res.ok) {
       return { isFavorite: false, favoriteId: null }
@@ -33,6 +44,7 @@ export async function addToFavorites(data: {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        ...getAuthHeaders(),
       },
       body: JSON.stringify(data),
     })
@@ -54,6 +66,7 @@ export async function removeFromFavorites(
       )}&equipmentId=${encodeURIComponent(equipmentId)}`,
       {
         method: "DELETE",
+        headers: getAuthHeaders(),
       }
     )
     if (!res.ok) {
@@ -72,6 +85,7 @@ export async function removeFavoriteById(
   try {
     const res = await fetch(`${BASE_URL}/favorites/${id}`, {
       method: "DELETE",
+      headers: getAuthHeaders(),
     })
     if (!res.ok) {
       return { success: false }
@@ -87,7 +101,10 @@ export async function getUserFavorites(userEmail: string): Promise<FavoriteItem[
   try {
     const res = await fetch(
       `${BASE_URL}/favorites?userEmail=${encodeURIComponent(userEmail)}`,
-      { cache: "no-store" }
+      {
+        cache: "no-store",
+        headers: getAuthHeaders(),
+      }
     )
     if (!res.ok) {
       return []
