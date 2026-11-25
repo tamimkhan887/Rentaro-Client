@@ -1,24 +1,10 @@
 import { Booking, BookingInput } from "@/types/equipment"
-import { authClient } from "@/lib/auth-client"
+import { getClientAuthHeaders } from "@/lib/auth-headers"
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"
 
 async function getAuthHeaders(): Promise<HeadersInit> {
-  if (typeof window !== "undefined") {
-    const token = localStorage.getItem("access-token")
-    if (token) return { authorization: `Bearer ${token}` }
-
-    try {
-      const session = await authClient.getSession()
-      const sessionToken = session?.data?.session?.token
-      if (sessionToken) {
-        return { authorization: `Bearer ${sessionToken}` }
-      }
-    } catch {
-      // Ignore session fetch error
-    }
-  }
-  return {}
+  return getClientAuthHeaders()
 }
 
 export async function createBooking(

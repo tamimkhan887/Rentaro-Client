@@ -67,6 +67,9 @@ export function Navbar({
       setIsSigningOut(true)
 
       await authClient.signOut()
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("access-token")
+      }
 
       toast.add({
         title: "Signed Out",

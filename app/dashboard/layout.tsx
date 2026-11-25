@@ -171,6 +171,9 @@ export default function DashboardLayout({
     try {
       setIsSigningOut(true)
       await authClient.signOut()
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("access-token")
+      }
       toast.add({
         title: "Signed Out",
         description: "You have been logged out successfully.",

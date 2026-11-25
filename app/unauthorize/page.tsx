@@ -44,6 +44,9 @@ export default function UnauthorizePage() {
   const handleSignOut = async () => {
     try {
       await authClient.signOut()
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("access-token")
+      }
       router.push("/login")
     } catch {
       router.push("/login")
