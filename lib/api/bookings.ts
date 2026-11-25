@@ -1,11 +1,22 @@
 import { Booking, BookingInput } from "@/types/equipment"
+import { authClient } from "@/lib/auth-client"
 
 const BASE_URL = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"
 
-function getAuthHeaders(): HeadersInit {
+async function getAuthHeaders(): Promise<HeadersInit> {
   if (typeof window !== "undefined") {
     const token = localStorage.getItem("access-token")
     if (token) return { authorization: `Bearer ${token}` }
+
+    try {
+      const session = await authClient.getSession()
+      const sessionToken = session?.data?.session?.token
+      if (sessionToken) {
+        return { authorization: `Bearer ${sessionToken}` }
+      }
+    } catch {
+      // Ignore session fetch error
+    }
   }
   return {}
 }
@@ -18,7 +29,7 @@ export async function createBooking(
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        ...getAuthHeaders(),
+        ...(await getAuthHeaders()),
       },
       body: JSON.stringify(data),
     })
@@ -39,7 +50,7 @@ export async function getUserBookings(userEmail: string): Promise<Booking[]> {
       `${BASE_URL}/bookings?userEmail=${encodeURIComponent(userEmail)}`,
       {
         cache: "no-store",
-        headers: getAuthHeaders(),
+        headers: await getAuthHeaders(),
       }
     )
     if (!res.ok) {
@@ -58,7 +69,7 @@ export async function getOwnerBookings(ownerEmail: string): Promise<Booking[]> {
       `${BASE_URL}/bookings?ownerEmail=${encodeURIComponent(ownerEmail)}`,
       {
         cache: "no-store",
-        headers: getAuthHeaders(),
+        headers: await getAuthHeaders(),
       }
     )
     if (!res.ok) {
@@ -75,7 +86,7 @@ export async function getAllBookings(): Promise<Booking[]> {
   try {
     const res = await fetch(`${BASE_URL}/bookings`, {
       cache: "no-store",
-      headers: getAuthHeaders(),
+      headers: await getAuthHeaders(),
     })
     if (!res.ok) {
       return []
@@ -87,6 +98,19 @@ export async function getAllBookings(): Promise<Booking[]> {
   }
 }
 
+export async function getAllBookingsWithError(): Promise<Booking[]> {
+  const res = await fetch(`${BASE_URL}/bookings`, {
+    cache: "no-store",
+    headers: await getAuthHeaders(),
+  })
+  if (!res.ok) {
+    const errData = await res.json().catch(() => ({}))
+    throw new Error(errData.message || errData.error || `Failed to fetch bookings (${res.status} ${res.statusText})`)
+  }
+  const data = await res.json()
+  return Array.isArray(data) ? data : []
+}
+
 export async function updateBookingStatus(
   id: string,
   status: string
@@ -96,13 +120,13 @@ export async function updateBookingStatus(
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
-        ...getAuthHeaders(),
+        ...(await getAuthHeaders()),
       },
       body: JSON.stringify({ status }),
     })
     const result = await res.json()
     if (!res.ok) {
-      return { error: result.error || "Failed to update booking status" }
+      return { error: result.error || result.message || "Failed to update booking status" }
     }
     return result
   } catch (error) {
