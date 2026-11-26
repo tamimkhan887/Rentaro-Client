@@ -17,7 +17,7 @@ import {
 } from "lucide-react"
 
 import { stripe } from "@/lib/stripe"
-import { createBooking } from "@/lib/api/bookings"
+import { authFetch } from "@/lib/unauth"
 import { CheckoutReceiptActions } from "@/components/checkout-receipt-actions"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -145,9 +145,21 @@ export default async function CheckoutSuccessPage({
       paidAt: new Date().toISOString(),
     }
 
-    const bookingRes = await createBooking(bookingPayload)
-    if (bookingRes.error) {
-      console.warn("Notice saving booking:", bookingRes.error)
+    const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:5000"
+    const res = await authFetch(`${backendUrl}/bookings`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(bookingPayload),
+    })
+    const bookingRes = await res.json().catch(() => ({}))
+    if (!res.ok || bookingRes.error) {
+      bookingError =
+        bookingRes.error ||
+        bookingRes.message ||
+        `Failed to save booking (${res.status} ${res.statusText})`
+      console.warn("Notice saving booking:", bookingError)
     } else {
       createdBooking = bookingPayload
     }
@@ -320,6 +332,14 @@ export default async function CheckoutSuccessPage({
             </div>
 
             {/* Action Buttons */}
+            {bookingError && (
+              <div className="p-3 rounded-lg bg-destructive/10 border border-destructive/30 text-xs text-destructive flex items-start gap-2">
+                <AlertTriangle className="h-4 w-4 shrink-0 mt-0.5" />
+                <span>
+                  Payment succeeded, but there was an issue saving your booking record: {bookingError}
+                </span>
+              </div>
+            )}
             <CheckoutReceiptActions />
           </CardContent>
         </Card>
